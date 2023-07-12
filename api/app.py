@@ -4,7 +4,7 @@ from flask import Flask, send_file
 from PIL import Image
 from os.path import dirname, abspath, join
 import io
-from drawHandleArk import (
+from .drawHandleArk import (
     single_image_handle,
     ten_image_handle,
     hundred_image_handle,
