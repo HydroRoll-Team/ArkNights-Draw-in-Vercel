@@ -90,6 +90,9 @@ class UpdateHandle:
 
     #
 
+    def test(self):
+        pass
+
 
 if __name__ == "__main__":
     app = UpdateHandle("../data/", "../conf/")
