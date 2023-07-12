@@ -10,7 +10,8 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
@@ -26,10 +27,4 @@ jobs:
         pip install -r requirements.txt
 
     - name: Run script
-      run: python update.py
-
-    - name: Upload artifacts
-      uses: actions/upload-artifact@v2
-      with:
-        name: Artifacts
-        path: data/Arknights/
+      run: python api/updateArk.py
