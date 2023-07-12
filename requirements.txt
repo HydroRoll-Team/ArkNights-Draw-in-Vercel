@@ -4,3 +4,4 @@ aiohttp==3.8.4
 aiofiles==23.1.0
 gevent==23.7.0
 tqdm
+lxml
