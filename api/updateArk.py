@@ -6,7 +6,7 @@ import asyncio
 from lxml import etree
 import requests
 from tqdm import tqdm, trange
-
+import os
 
 class UpdateHandle:
     def __init__(self, data_path: str, conf_path: str):
