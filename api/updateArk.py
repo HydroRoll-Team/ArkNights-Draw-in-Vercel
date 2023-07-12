@@ -3,41 +3,9 @@ import time
 import base64
 import re
 import asyncio
-# from .update import UpdateHandle
 from tqdm import tqdm, trange
 import os
 from urllib.parse import unquote
-
-# class UpdateHandle:
-#     def __init__(self, data_path: str, conf_path: str):
-#         self.data_path = data_path
-#         self.conf_path = conf_path
-
-#     async def get_url(self, url: str):
-#         await asyncio.sleep(1)
-#         try:
-#             response = requests.get(url)
-#             if response.status_code == 200:
-#                 return response.text
-#             else:
-#                 print(f"Failed to fetch URL: {url}")
-#                 return None
-#         except:
-#             print(f"Failed to fetch URL: {url}")
-#             return None
-
-#     async def download_file(self, url: str, file_name: str, download_path: str):
-#         await asyncio.sleep(1)
-#         try:
-#             response = requests.get(url)
-#             file_path = download_path + file_name
-#             with open(file_path, 'wb') as file:
-#                 file.write(response.content)
-#             return True
-#         except:
-#             print(f"Failed to download file: {file_name}")
-#             return False
-
 import aiofiles as aiofiles
 import aiohttp
 from lxml import etree, html
