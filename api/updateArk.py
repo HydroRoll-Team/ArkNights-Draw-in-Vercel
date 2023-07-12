@@ -1,8 +1,42 @@
-# -*- encoding:utf-8 -*-
 import json
 import time
+import base64
+import re
+import asyncio
+from lxml import etree
+import requests
 from tqdm import tqdm, trange
-from ArknightDraw.update import *
+
+
+class UpdateHandle:
+    def __init__(self, data_path: str, conf_path: str):
+        self.data_path = data_path
+        self.conf_path = conf_path
+
+    async def get_url(self, url: str):
+        await asyncio.sleep(1)
+        try:
+            response = requests.get(url)
+            if response.status_code == 200:
+                return response.text
+            else:
+                print(f"Failed to fetch URL: {url}")
+                return None
+        except:
+            print(f"Failed to fetch URL: {url}")
+            return None
+
+    async def download_file(self, url: str, file_name: str, download_path: str):
+        await asyncio.sleep(1)
+        try:
+            response = requests.get(url)
+            file_path = download_path + file_name
+            with open(file_path, 'wb') as file:
+                file.write(response.content)
+            return True
+        except:
+            print(f"Failed to download file: {file_name}")
+            return False
 
 
 class UpdateHandleArk(UpdateHandle):
@@ -19,9 +53,9 @@ class UpdateHandleArk(UpdateHandle):
             3: []
         }
         limit_activity = {
-            "全部活动":[],
-            "linkage":{},
-            "limit_":{}
+            "全部活动": [],
+            "linkage": {},
+            "limit_": {}
         }
         url = "https://wiki.biligame.com/arknights/干员数据表"
         result = await self.get_url(url)
@@ -58,7 +92,6 @@ class UpdateHandleArk(UpdateHandle):
                 "半身像": "https://prts.wiki" + str(image_url_path.group()) + "/半身像_" + name + "_1.png",
                 "立绘": "https://prts.wiki" + str(image_url_path.group()) + "/立绘_" + name + "_1.png"
             }
-            # print(json.dumps(char_dict, ensure_ascii=False, indent=2))
 
             # 稀有度分类
             if "标准寻访" in char_dict["获取途径"]:
@@ -73,8 +106,7 @@ class UpdateHandleArk(UpdateHandle):
 
             char_data_list[name] = char_dict
 
-        # print(json.dumps(char_data_list, ensure_ascii=False, indent=2))
-        json_write(self.data_path + 'simple_star_list.json',simple_star_list)
+        json_write(self.data_path + 'simple_star_list.json', simple_star_list)
         json_write(self.data_path + 'char_data_list.json', char_data_list)
         return char_data_list
 
@@ -90,10 +122,8 @@ class UpdateHandleArk(UpdateHandle):
                 pbar.update(1)
 
     def start_update(self):
-
         loop = asyncio.get_event_loop()
         char_list = loop.run_until_complete(self.get_info())
-
         loop.run_until_complete(self.char_image_download(char_list))
 
 
@@ -106,14 +136,44 @@ def json_write(path, data) -> bool:
         return False
 
 
-def json_read(path):
-    try:
-        with open(path, 'r', encoding='utf-8') as f:
-            data = f.read()
-        return json.loads(data)
-    except:
-        return False
+def upload_file_to_repo(file_path, repo_owner, repo_name, branch, token):
+    url = f"https://api.github.com/repos/{repo_owner}/{repo_name}/contents/{file_path}"
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "Accept": "application/vnd.github.v3+json"
+    }
+    with open(file_path, 'rb') as file:
+        content = file.read()
+        data = {
+            "message": "Upload file",
+            "content": base64.b64encode(content).decode("utf-8"),
+            "branch": branch
+        }
+        response = requests.put(url, json=data, headers=headers)
+        if response.status_code == 201:
+            print("File uploaded successfully.")
+        else:
+            print(f"Failed to upload file. Response: {response.content.decode('utf-8')}")
 
-
+            
 if __name__ == "__main__":
-    UpdateHandleArk("../data/Arknights/", "../conf/Arknights/").start_update()
+    data_path = "../data/Arknights/"
+    conf_path = "../conf/Arknights/"
+    github_token = os.getenv('GITHUB_TOKEN')
+    repo_fullname = os.getenv('GITHUB_REPOSITORY')
+    repo_owner, repo_name = repo_fullname.split("/")
+    branch = os.getenv('GITHUB_REF').split("/")[-1]
+
+    # 执行脚本更新数据和下载图片
+    ark_update = UpdateHandleArk(data_path, conf_path)
+    ark_update.start_update()
+
+    # 上传文件到对应的Repo文件夹
+    upload_file_to_repo(data_path + 'simple_star_list.json', repo_owner, repo_name, branch, github_token)
+    upload_file_to_repo(data_path + 'char_data_list.json', repo_owner, repo_name, branch, github_token)
+
+    # 上传图片文件夹里的所有文件
+    file_path = "image/char/"
+    files = os.listdir(file_path)
+    for file in files:
+        upload_file_to_repo(file_path + file, repo_owner, repo_name, branch, github_token)
