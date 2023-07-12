@@ -4,7 +4,7 @@ import base64
 import re
 import asyncio
 from lxml import etree
-from api.update import *
+from .update import UpdateHandle
 from tqdm import tqdm, trange
 import os
 from urllib.parse import unquote
