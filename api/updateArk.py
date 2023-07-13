@@ -132,7 +132,7 @@ class UpdateHandleArk(UpdateHandle):
 
     # 下载图片数据
     async def char_image_download(self, char_list):
-        download_path = join(self.conf_path, "image", "char")
+        download_path = join(self.data_path, "image", "char")
         with tqdm(range(len(char_list)), desc="下载图片素材", unit="char") as pbar:
             for char in range(len(char_list)):
                 name = list(char_list)[char]
@@ -177,8 +177,8 @@ def upload_file_to_repo(file_path, repo_owner, repo_name, branch, token):
 
 if __name__ == "__main__":
     # 设置文件路径
-    data_path = join(dir, "..", "data")
-    conf_path = join(dir, "..", "conf")
+    data_path = join(dir, "data")
+    conf_path = join(dir, "conf")
     
     github_token = os.getenv('GITHUB_TOKEN')
     repo_fullname = os.getenv('GITHUB_REPOSITORY')
@@ -197,4 +197,4 @@ if __name__ == "__main__":
     image_path = join(data_path, "image", "char")
     files = os.listdir(image_path)
     for file in files:
-        upload_file_to_repo(join(conf_path, "image", "char", file), repo_owner, repo_name, branch, github_token)
+        upload_file_to_repo(join(data_path, "image", "char", file), repo_owner, repo_name, branch, github_token)
