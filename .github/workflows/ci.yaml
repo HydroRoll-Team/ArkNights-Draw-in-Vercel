@@ -51,7 +51,7 @@ jobs:
 
     - name: Commit and Push changes
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       run: |
         cd ${{ github.workspace }}
         git config user.name "HsiangNianian"
