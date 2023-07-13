@@ -9,12 +9,12 @@ from urllib.parse import unquote
 import aiofiles as aiofiles
 import aiohttp
 from lxml import etree, html
-
+from os.path import dirname, abspath, join
 
 class TableData:
     pass
 
-
+dir = dirname(abspath(__file__))
 # 更新核心函数
 class UpdateHandle:
 
@@ -168,7 +168,7 @@ class UpdateHandleArk(UpdateHandle):
 
     # 下载图片数据
     async def char_image_download(self, char_list):
-        download_path = "image/char/"
+        download_path = join(dir,"..","data","image","char")
         with tqdm(range(len(char_list)), desc="下载图片素材", unit="char") as pbar:
             for char in range(len(char_list)):
                 name = list(char_list)[char]
@@ -213,8 +213,8 @@ def upload_file_to_repo(file_path, repo_owner, repo_name, branch, token):
 
             
 if __name__ == "__main__":
-    data_path = "../data/Arknights/"
-    conf_path = "../conf/Arknights/"
+    data_path = join(dir,"..","data","Arknights")
+    conf_path = join(dir,"..","conf","Arknights")
     github_token = os.getenv('GITHUB_TOKEN')
     repo_fullname = os.getenv('GITHUB_REPOSITORY')
     repo_owner, repo_name = repo_fullname.split("/")
@@ -229,7 +229,7 @@ if __name__ == "__main__":
     upload_file_to_repo(data_path + 'char_data_list.json', repo_owner, repo_name, branch, github_token)
 
     # 上传图片文件夹里的所有文件
-    file_path = "image/char/"
+    file_path = join(dir,"..","data","image","char")
     files = os.listdir(file_path)
     for file in files:
         upload_file_to_repo(file_path + file, repo_owner, repo_name, branch, github_token)
