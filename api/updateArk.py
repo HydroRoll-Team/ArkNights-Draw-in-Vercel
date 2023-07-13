@@ -12,13 +12,9 @@ from lxml import etree, html
 from os.path import dirname, abspath, join
 import requests
 
-class TableData:
-    pass
-
 dir = dirname(abspath(__file__))
-# 更新核心函数
-class UpdateHandle:
 
+class UpdateHandle:
     def __init__(self, data_path: str, conf_path: str):
         self.headers = {
             "User-Agent": '"Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1; TencentTraveler 4.0)"'
@@ -27,39 +23,20 @@ class UpdateHandle:
         self.conf_path = conf_path
         pass
 
-    def get_char_data(self):
-        pass
-
-    def get_table_data(self):
-        pass
-
-    def get_up_table(self):
-        pass
-
     async def download_file(self, url: str, name: str, path: str) -> bool:
-        r"""下载文件
-
-        :param url: 下载链接
-        :param name: 文件名
-        :param path: 储存目录
-        :rtype bool
-        """
-        dir_path = self.data_path + path
-        file_path = self.data_path + path + name
+        dir_path = join(self.data_path, path)
+        file_path = join(self.data_path, path, name)
 
         if not os.path.exists(dir_path):
             os.makedirs(dir_path)
             return True
         if os.path.exists(file_path):
-            # print("文件"+name+"已存在")
             return True
         try:
             async with aiohttp.ClientSession(headers=self.headers) as session:
                 async with session.get(url, timeout=10) as response:
                     async with aiofiles.open(str(file_path), "wb") as f:
                         await f.write(await response.read())
-            # print(f"下载文件{name}成功")
-            # print(f"下载文件{name}成功，url：{url}，储存目录：{path}")
             return True
         except TimeoutError:
             print(f"下载文件{name} 超时，url：{url}")
@@ -68,15 +45,10 @@ class UpdateHandle:
             print(f"下载文件 {name} 链接错误，url：{url}")
             return False
 
-    def request_data(self, url: str, cookie: list):
-        pass
-
-    # 获取url链接内容
     async def get_url(self, url: str) -> str:
         result = ""
         retry = 5
         for i in range(retry):
-
             try:
                 async with aiohttp.ClientSession(headers=self.headers) as session:
                     async with session.get(url) as resp:
@@ -86,15 +58,6 @@ class UpdateHandle:
                 self.log_print()
                 await asyncio.sleep(1)
         return result
-
-    # 显示日志
-    def log_print(self, message: str) -> bool:
-        pass
-
-    #
-
-    def test(self):
-        pass
 
 class UpdateHandleArk(UpdateHandle):
     def __init__(self, data_path: str, conf_path: str):
@@ -163,19 +126,19 @@ class UpdateHandleArk(UpdateHandle):
 
             char_data_list[name] = char_dict
 
-        json_write(self.data_path + 'simple_star_list.json', simple_star_list)
-        json_write(self.data_path + 'char_data_list.json', char_data_list)
-        return char_data_list
+        json_write(join(self.data_path, 'simple_star_list.json'), simple_star_list)
+        json_write(join(self.data_path, 'char_data_list.json'), char_data_list)
+        return simple_star_list, char_data_list
 
     # 下载图片数据
     async def char_image_download(self, char_list):
-        download_path = join(dir,"..","data","image","char")
+        download_path = join(self.conf_path, "image", "char")
         with tqdm(range(len(char_list)), desc="下载图片素材", unit="char") as pbar:
             for char in range(len(char_list)):
                 name = list(char_list)[char]
                 await self.download_file(char_list[name]["半身像"], "半身像_" + name + ".png", download_path)
                 await self.download_file(char_list[name]["立绘"], "立绘_" + name + ".png", download_path)
-                pbar.set_postfix(prograss=str(name) + "下载完毕")
+                pbar.set_postfix(progress=str(name) + "下载完毕")
                 pbar.update(1)
 
     def start_update(self):
@@ -194,7 +157,7 @@ def json_write(path, data) -> bool:
 
 
 def upload_file_to_repo(file_path, repo_owner, repo_name, branch, token):
-    url = f"https://api.github.com/repos/{repo_owner}/{repo_name}/contents/{file_path}"
+    url = f"https://api.github.com/repos/{repo_owner}/{repo_name}/contents/{file_path.lstrip('/')}"
     headers = {
         "Authorization": f"Bearer {token}",
         "Accept": "application/vnd.github.v3+json"
@@ -212,25 +175,26 @@ def upload_file_to_repo(file_path, repo_owner, repo_name, branch, token):
         else:
             print(f"Failed to upload file. Response: {response.content.decode('utf-8')}")
 
-            
 if __name__ == "__main__":
-    data_path = join(dir,"..","data","Arknights")
-    conf_path = join(dir,"..","conf","Arknights")
+    # 设置文件路径
+    data_path = join(dir, "data")
+    conf_path = join(dir, "conf")
+    
     github_token = os.getenv('GITHUB_TOKEN')
     repo_fullname = os.getenv('GITHUB_REPOSITORY')
     repo_owner, repo_name = repo_fullname.split("/")
     branch = os.getenv('GITHUB_REF').split("/")[-1]
-
+    
     # 执行脚本更新数据和下载图片
     ark_update = UpdateHandleArk(data_path, conf_path)
     ark_update.start_update()
 
-    # 上传文件到对应的Repo文件夹
-    upload_file_to_repo(data_path + 'simple_star_list.json', repo_owner, repo_name, branch, github_token)
-    upload_file_to_repo(data_path + 'char_data_list.json', repo_owner, repo_name, branch, github_token)
+    # 上传两个json文件到conf文件夹
+    upload_file_to_repo(join(conf_path, 'simple_star_list.json'), repo_owner, repo_name, branch, github_token)
+    upload_file_to_repo(join(conf_path, 'char_data_list.json'), repo_owner, repo_name, branch, github_token)
 
-    # 上传图片文件夹里的所有文件
-    file_path = join(dir,"..","data","image","char")
-    files = os.listdir(file_path)
+    # 上传图片文件夹里的所有文件到conf/image/char文件夹
+    image_path = join(data_path, "image", "char")
+    files = os.listdir(image_path)
     for file in files:
-        upload_file_to_repo(file_path + file, repo_owner, repo_name, branch, github_token)
+        upload_file_to_repo(join(conf_path, "image", "char", file), repo_owner, repo_name, branch, github_token)
