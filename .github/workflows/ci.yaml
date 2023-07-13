@@ -25,7 +25,9 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Run script to update data and download images
-        run: python api/updateArk.py
+        run: |
+          python api/updateArk.py
+          ls
 
       - name: Archive image folder
         uses: actions/upload-artifact@v2
@@ -37,4 +39,4 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: JSON files
-          path: conf/simple_star_list.json, conf/char_data_list.json
+          path: simple_star_list.json, char_data_list.json
