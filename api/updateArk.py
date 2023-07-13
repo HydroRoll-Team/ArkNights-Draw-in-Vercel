@@ -128,7 +128,7 @@ class UpdateHandleArk(UpdateHandle):
 
         json_write(join(self.data_path, 'simple_star_list.json'), simple_star_list)
         json_write(join(self.data_path, 'char_data_list.json'), char_data_list)
-        return simple_star_list, char_data_list
+        return char_data_list
 
     # 下载图片数据
     async def char_image_download(self, char_list):
