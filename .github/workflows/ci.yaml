@@ -29,8 +29,8 @@ jobs:
           python updateArk.py
           mkdir -p ${{ github.workspace }}/artifacts/images
           mv data/image/char ${{ github.workspace }}/artifacts/images
-          mv conf/simple_star_list.json ${{ github.workspace }}/artifacts/simple_star_list.json
-          mv conf/char_data_list.json ${{ github.workspace }}/artifacts/char_data_list.json
+          mv data/simple_star_list.json ${{ github.workspace }}/artifacts/simple_star_list.json
+          mv data/char_data_list.json ${{ github.workspace }}/artifacts/char_data_list.json
 
       - name: Archive image folder
         uses: actions/upload-artifact@v2
