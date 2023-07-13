@@ -27,7 +27,7 @@ jobs:
       run: |
         python updateArk.py
         mkdir -p ${{ github.workspace }}/artifacts/images
-        mv char/* ${{ github.workspace }}/artifacts/images
+        mv data/image/char/* ${{ github.workspace }}/artifacts/images
         mv data/simple_star_list.json ${{ github.workspace }}/artifacts/simple_star_list.json
         mv data/char_data_list.json ${{ github.workspace }}/artifacts/char_data_list.json
 
