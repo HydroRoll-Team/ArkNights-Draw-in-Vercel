@@ -177,8 +177,8 @@ def upload_file_to_repo(file_path, repo_owner, repo_name, branch, token):
 
 if __name__ == "__main__":
     # 设置文件路径
-    data_path = join(dir, "data")
-    conf_path = join(dir, "conf")
+    data_path = join(dir, "..", "data")
+    conf_path = join(dir, "..", "conf")
     
     github_token = os.getenv('GITHUB_TOKEN')
     repo_fullname = os.getenv('GITHUB_REPOSITORY')
