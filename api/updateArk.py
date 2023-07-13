@@ -10,6 +10,7 @@ import aiofiles as aiofiles
 import aiohttp
 from lxml import etree, html
 from os.path import dirname, abspath, join
+import requests
 
 class TableData:
     pass
