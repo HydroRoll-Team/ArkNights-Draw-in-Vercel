@@ -10,36 +10,52 @@ on:
 jobs:
   update_data:
     runs-on: ubuntu-latest
-    env:
-      GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-        
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.8
+    - name: Checkout repository
+      uses: actions/checkout@v2
 
-      - name: Install dependencies
-        run: pip install -r requirements.txt
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8
 
-      - name: Run script to update data and download images
-        run: |
-          python updateArk.py
-          mkdir -p ${{ github.workspace }}/artifacts/images
-          mv data/image/char ${{ github.workspace }}/artifacts/images
-          mv data/simple_star_list.json ${{ github.workspace }}/artifacts/simple_star_list.json
-          mv data/char_data_list.json ${{ github.workspace }}/artifacts/char_data_list.json
+    - name: Install dependencies
+      run: pip install -r requirements.txt
 
-      - name: Archive image folder
-        uses: actions/upload-artifact@v2
-        with:
-          name: images
-          path: artifacts/images
+    - name: Run script to update data and download images
+      run: |
+        python updateArk.py
+        mkdir -p ${{ github.workspace }}/artifacts/images
+        mv char/* ${{ github.workspace }}/artifacts/images
+        mv data/simple_star_list.json ${{ github.workspace }}/artifacts/simple_star_list.json
+        mv data/char_data_list.json ${{ github.workspace }}/artifacts/char_data_list.json
 
-      - name: Upload JSON files to Artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: JSON files
-          path: artifacts/simple_star_list.json, artifacts/char_data_list.json
+    - name: Archive image folder
+      uses: actions/upload-artifact@v2
+      with:
+        name: images
+        path: artifacts/images
+
+    - name: Upload JSON files to Artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: JSON files
+        path: artifacts/simple_star_list.json
+
+    - name: Upload char_data_list.json to Artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: JSON files
+        path: artifacts/char_data_list.json
+
+    - name: Commit and Push changes
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        cd ${{ github.workspace }}
+        git config user.name "HsiangNianian"
+        git config user.email "i@jyunko.cn"
+        git add data/image/char/*
+        git diff --cached --quiet || git commit -m "Update char images"
+        git push origin HEAD:main
