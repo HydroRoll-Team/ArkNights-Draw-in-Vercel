@@ -189,12 +189,12 @@ if __name__ == "__main__":
     ark_update = UpdateHandleArk(data_path, conf_path)
     ark_update.start_update()
 
-    # 上传两个json文件到conf文件夹
-    upload_file_to_repo(join(conf_path, 'simple_star_list.json'), repo_owner, repo_name, branch, github_token)
-    upload_file_to_repo(join(conf_path, 'char_data_list.json'), repo_owner, repo_name, branch, github_token)
+    # # 上传两个json文件到conf文件夹
+    # upload_file_to_repo(join(conf_path, 'simple_star_list.json'), repo_owner, repo_name, branch, github_token)
+    # upload_file_to_repo(join(conf_path, 'char_data_list.json'), repo_owner, repo_name, branch, github_token)
 
-    # 上传图片文件夹里的所有文件到conf/image/char文件夹
-    image_path = join(data_path, "image", "char")
-    files = os.listdir(image_path)
-    for file in files:
-        upload_file_to_repo(join(data_path, "image", "char", file), repo_owner, repo_name, branch, github_token)
+    # # 上传图片文件夹里的所有文件到conf/image/char文件夹
+    # image_path = join(data_path, "image", "char")
+    # files = os.listdir(image_path)
+    # for file in files:
+    #     upload_file_to_repo(join(data_path, "image", "char", file), repo_owner, repo_name, branch, github_token)
