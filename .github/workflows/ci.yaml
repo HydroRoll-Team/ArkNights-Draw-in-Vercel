@@ -27,7 +27,7 @@ jobs:
       - name: Run script to update data and download images
         run: |
           python api/updateArk.py
-          ls
+          ls -h
 
       - name: Archive image folder
         uses: actions/upload-artifact@v2
