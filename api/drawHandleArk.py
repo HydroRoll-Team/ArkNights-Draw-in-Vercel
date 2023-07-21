@@ -16,7 +16,6 @@ char_image_path = join(dir, "..",  "data", "Arknights", "image", "char")
 # 单抽图片处理
 def single_image_handle():
     im = Image.open(background_path, mode="r")
-    pass
 
 
 # 十连图片处理
@@ -35,7 +34,7 @@ def ten_image_handle(draw_list=None):
         light_image = Image.open(join(gacha_image_path, str(char_list[char]["星级"]) + "_light.png"))
         profession_image = Image.open(join(gacha_image_path, str(char_list[char]["职业"]) + ".png"))
         # 获取角色半身图并将其缩放
-        char_image = Image.open(join(char_image_path, "半身像_" + str(char) + ".png"))
+        char_image = Image.open(join(char_image_path, f"半身像_{str(char)}.png"))
         char_image = char_image.resize((85, 254), resample=Image.LANCZOS, reducing_gap=3.0, box=(30, 0, 150, 360))
         # 合成图片
         main_image = get_mongolia(main_image, light_image, 18 + x * 84, 5)
@@ -48,14 +47,13 @@ def ten_image_handle(draw_list=None):
 
 def hundred_image_handle():
     im = Image.open(background_path, mode="r")
-    pass
 
 
 def ten_draw(mode=None, group=None):
     simple_star_list = join(dir, "..",  "data", "Arknights", "simple_star_list.json")
     char_list = []
     simple_star_list = json_read(simple_star_list)
-    for i in range(10):
+    for _ in range(10):
         x = random.randint(0, 1000)
         if 0 <= x <= 20:
             char_list.append(random.choice(simple_star_list["6"]))
@@ -65,8 +63,7 @@ def ten_draw(mode=None, group=None):
             char_list.append(random.choice(simple_star_list["4"]))
         else:
             char_list.append(random.choice(simple_star_list["3"]))
-    im = ten_image_handle(char_list)
-    return im
+    return ten_image_handle(char_list)
 
 
 # 透明通道合成

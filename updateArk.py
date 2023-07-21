@@ -59,7 +59,7 @@ async def get_info(data_path):
             sources = [_.strip('\n') for _ in char.xpath("./td[8]/text()")]
 
             # 获取半身图/全身立绘
-            url_root = "https://prts.wiki/w/文件:半身像_" + name + "_1.png"
+            url_root = f"https://prts.wiki/w/文件:半身像_{name}_1.png"
             async with aiohttp.ClientSession() as session:
                 async with session.get(url_root) as resp:
                     result = await resp.text()
@@ -74,8 +74,8 @@ async def get_info(data_path):
             "职业": str(profession),
             "星级": int(str(star).strip()),
             "获取途径": sources,
-            "半身像": "https://prts.wiki" + str(image_url_path.group()) + "/半身像_" + name + "_1.png",
-            "立绘": "https://prts.wiki" + str(image_url_path.group()) + "/立绘_" + name + "_1.png"
+            "半身像": f"https://prts.wiki{str(image_url_path.group())}/半身像_{name}_1.png",
+            "立绘": f"https://prts.wiki{str(image_url_path.group())}/立绘_{name}_1.png",
         }
 
         # 稀有度分类
@@ -100,8 +100,8 @@ async def char_image_download(char_list):
     download_path = os.path.join(data_path, "image", "char")
     for char in char_list:
         name = char
-        await download_file(char_list[name]["半身像"], "半身像_" + name + ".png", download_path)
-        await download_file(char_list[name]["立绘"], "立绘_" + name + ".png", download_path)
+        await download_file(char_list[name]["半身像"], f"半身像_{name}.png", download_path)
+        await download_file(char_list[name]["立绘"], f"立绘_{name}.png", download_path)
 
 def start_update():
     loop = asyncio.get_event_loop()
